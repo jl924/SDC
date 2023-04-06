@@ -1,0 +1,179 @@
+.qaMainContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: auto;
+  width: auto;
+  z-index: 1;
+}
+.qQuestionCard {
+  display: flex;
+  flex-direction: row;
+  font-size: medium;
+  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+  justify-content: space-between;
+  /* background: white; */
+  width: 1050px;
+  padding: 1rem;
+  margin: 0.5rem;
+  align-items: flex-start;
+}
+
+.qAnswerCard {
+  display: flex;
+  font-size: small;
+  font-weight: 100;
+  flex-direction: column;
+  justify-content: space-between;
+  /* background: white; */
+  width: 600px;
+  width: 700px;
+  padding: 1rem;
+  margin: 0.5rem;
+  /* border: 2px solid darkgrey; */
+  border-radius: 0.25rem;
+}
+
+.qAnswerCard:hover,
+.qAnswerCard:focus {
+  border-color: rgba(0, 0, 0, 0.15);
+  box-shadow: rgba(0, 0, 0, 0.5) 0 4px 12px;
+  color: rgba(0, 0, 0, 0.65);
+}
+
+.qAnswerCard:hover {
+  transform: translateY(-1px);
+}
+
+.qaSearchStyle {
+  width: 700px;
+  height: 25px;
+  border: 2px solid rgb(0, 0, 0);
+  border-radius: 0.25rem;
+  display: flex;
+  padding: 5px;
+}
+.qaSearchContainer {
+  display: flex;
+  border: none;
+  /* border-color: white; */
+  padding: 10px;
+  margin: 10px;
+  width: auto;
+}
+.qaList {
+  display: flex;
+  flex-direction: column;
+}
+
+.qaListContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  border-radius: 5%;
+  padding: 10px;
+  margin: 10px;
+  flex-basis: 500px;
+  overflow-y: auto;
+  }
+
+.qaButtonContainer {
+  display: flex;
+  justify-content: space-evenly;
+  border: none;
+  /* border-color: white; */
+  margin: 10px;
+  width: 1000px;
+
+}
+.qAnswerInfo {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+
+}
+.qmodal {
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  justify-content: center;
+  align-items:flex-start;
+  height: 400px;
+  width: 300px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fff;
+  padding: 40px;
+  z-index: 1000;
+  border-radius: 20px;
+  overflow-y: auto;
+}
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgb(0, 0, 0, 0.7);
+  z-index: 1000;
+}
+.vote {
+  cursor: pointer;
+}
+.vote:hover {
+  color: #3f51b5;
+}
+.voted {
+  color: #3f51b5;
+  pointer-events: none;
+}
+.qModalContent {
+  display: flex;
+  flex-direction: row;
+  justify-content: left;
+  align-items: flex-end;
+
+}
+
+.buttonStyle {
+  align-items: center;
+  /* background-color: #ffffff; */
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 0.25rem;
+  box-shadow: rgba(0, 0, 0, 0.02) 0 1px 3px 0;
+  box-sizing: border-box;
+  color: rgba(0, 0, 0, 0.85);
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 16px;
+  font-weight: 600;
+  justify-content: center;
+  line-height: 1.25;
+  margin: 0;
+  min-height: 1rem;
+  padding: calc(0.875rem - 1px) calc(1.5rem - 1px);
+  position: relative;
+  transition: all 250ms;
+  touch-action: manipulation;
+  vertical-align: baseline;
+  width: auto;
+}
+
+.buttonStyle:hover,
+.buttonStyle:focus {
+  border-color: rgba(0, 0, 0, 0.15);
+  box-shadow: rgba(0, 0, 0, 0.1) 0 4px 12px;
+  color: rgba(0, 0, 0, 0.65);
+}
+
+.buttonStyle:hover {
+  transform: translateY(-1px);
+}
+
+.image {
+  height: 100px;
+  width: 100px;
+}

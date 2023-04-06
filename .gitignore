@@ -1,0 +1,10 @@
+node_modules
+public/
+config/myConfig.js
+webpack.config.js
+
+.env
+
+# hi
+**/.DS_Store
+#edit
