@@ -7,10 +7,10 @@ mongoose.connect("mongodb://localhost:27017/sdc", {
 });
 
 const db = mongoose.connection;
-db.on("error", console.error.bind(console, "connection error:"));
-db.once("open", function () {
-  // we're connected!
-});
+// db.on("error", console.error.bind(console, "connection error:"));
+// db.once("open", function () {
+//   // we're connected!
+// });
 
 const productSchema = new mongoose.Schema({
   id: Number,
@@ -38,16 +38,13 @@ const Related = mongoose.model("related", relatedSchema);
 
 const styleSchema = mongoose.Schema({
   id: Number,
-  results: [
-    {
-      style_id: Number,
-      name: String,
-      original_price: String,
-      sale_price: Boolean,
-      photos: [{ thumbnail_url: String, url: String }],
-      skus: {},
-    },
-  ],
+  productId: Number,
+  name: String,
+  original_price: String,
+  sale_price: String,
+  default_style: Number,
+  photos: Array,
+  skus: Array,
 });
 
 const Style = mongoose.model("style", styleSchema);
@@ -61,18 +58,79 @@ const photoSchema = mongoose.Schema({
 
 const Photo = mongoose.model("photo", photoSchema);
 
-const csvFilePath4 = `${__dirname}/skus.csv`;
-const csvFilePath5 = `${__dirname}/photos.csv`;
-const csvFilePath6 = `${__dirname}/styles.csv`;
+const skusSchema = mongoose.Schema({
+  skus: {},
+});
+
+const Skus = mongoose.model("skus", skusSchema);
+
+Photo.find({ styleId: 10000 }).then((data) => {
+  console.log(data);
+});
+
+let findPhoto = (id) => {
+  Photo.find({ styleId: id }).then((data) => {
+    return data;
+  });
+};
+
+// const csvFilePath4 = `${__dirname}/csv/skus.csv`;
+// const csvFilePath5 = `${__dirname}/csv/photos.csv`;
+// const csvFilePath6 = `${__dirname}/csv/styles.csv`;
+// Photo.find({ styleId: 1 }).then((data) => {
+//   console.log(data);
+// });
+// var array1 = [];
 // csv()
 //   .fromFile(csvFilePath6)
 //   .then((jsonObj) => {
-//     console.log(jsonObj);
-//   });
+//     // console.log(jsonObj);
 
-Photo.find().then((data) => {
-  console.log(data);
-});
+//     });
+
+// let addData = (i) => {
+//   var current = Number(jsonObj[i].id);
+//   var obj = jsonObj[i];
+//   return Photo.find({ styleId: current }).then((data) => {
+//     var photodata = data;
+//     Skus.find({ styleId: current }).then((data1) => {
+//       var skusdata = data1;
+//       // console.log(photodata, skusdata, "hi");
+//       obj.photos = photodata;
+//       obj.skus = skusdata;
+//       // console.log(obj);
+//       return Style.insertMany([obj]);
+//     });
+//   });
+// for (var j = 0; j < 1; j++) {
+//   promise.push(addData(j));
+// }
+// Promise.all(promise)
+
+//   let loadhelper = async (start) => {
+//     var promise = [];
+//     var position = start * 100;
+//     for (var j = position; j < position + 100; j++) {
+//       // console.log(addData(j))
+//       promise.push(addData(j));
+//     }
+//     console.log(promise, "promise");
+//     await Promise.all(promise);
+//     console.log("added" + position);
+//     return;
+//   };
+
+//   const loader = async () => {
+//     for (n = 0; n < 19580; n++) {
+//       await loadhelper(n);
+//     }
+//   };
+//   loader();
+// });
+
+// Related.find().then((data) => {
+//   console.log(data);
+// });
 // const csvFilePath = `${__dirname}/product.csv`;
 
 // const csvFilePath2 = `${__dirname}/features.csv`;
