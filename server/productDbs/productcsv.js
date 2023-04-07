@@ -1,5 +1,6 @@
 const csv = require("csvtojson");
 const mongoose = require("mongoose");
+const fs = require("fs");
 
 mongoose.connect("mongodb://localhost:27017/sdc", {
   useNewUrlParser: true,
@@ -36,18 +37,24 @@ const relatedSchema = new mongoose.Schema({
 
 const Related = mongoose.model("related", relatedSchema);
 
-const styleSchema = mongoose.Schema({
-  id: Number,
-  productId: Number,
-  name: String,
-  original_price: String,
-  sale_price: String,
-  default_style: Number,
-  photos: Array,
-  skus: Array,
-});
+const styleSchema = mongoose.Schema(
+  {
+    _id: Number,
+    results: [
+      {
+        style_id: Number,
+        name: String,
+        original_price: String,
+        sale_price: Boolean,
+        photos: [{ thumbnail_url: String, url: String }],
+        skus: {},
+      },
+    ],
+  },
+  { minimize: false }
+);
 
-const Style = mongoose.model("style", styleSchema);
+const Style = mongoose.model("Style", styleSchema);
 
 const photoSchema = mongoose.Schema({
   id: Number,
@@ -64,19 +71,60 @@ const skusSchema = mongoose.Schema({
 
 const Skus = mongoose.model("skus", skusSchema);
 
-Photo.find({ styleId: 10000 }).then((data) => {
-  console.log(data);
-});
+// Photo.find({ styleId: 10000 }).then((data) => {
+//   console.log(data);
+// });
 
-let findPhoto = (id) => {
-  Photo.find({ styleId: id }).then((data) => {
-    return data;
-  });
-};
+// let findPhoto = (id) => {
+//   return Photo.find({ styleId: id }).then((data) => {
+//     return data;
+//   });
+// };
 
+// let findStyle = (num, callback) => {
+//   Style.find({ productId: num }).then((data) => {
+//     console.log(data);
+//   });
+// };
+
+// findStyle(1);
+// let findSkus = (id) => {
+//   return Skus.find({ styleId: id }).then((data) => {
+//     return data;
+//   });
+// };
+// console.log(findSkus(1));
+
+// const photoJson = require("./csv/photos.json");
+// console.log(photoJson.results[0]);
+
+// const fileJson = require("./csv/file.json");
+// console.log(fileJson.results[0]);
+// module.exports.findSkus = findSkus;
+// module.exports.findStyle = findStyle;
+// module.exports.findPhoto = findPhoto;
 // const csvFilePath4 = `${__dirname}/csv/skus.csv`;
 // const csvFilePath5 = `${__dirname}/csv/photos.csv`;
 // const csvFilePath6 = `${__dirname}/csv/styles.csv`;
+
+// csv()
+//   .fromFile(csvFilePath6)
+//   .then((jsonObj) => {
+//     console.log(jsonObj);
+//     fs.writeFileSync("test1.txt", `${jsonObj}`, (err) => {
+//       if (err) {
+//         console.log(err);
+//       }
+//       console.log("success");
+//     });
+//   });
+
+// const photoJson = require("./csv/photos.json");
+
+// for (var i = 0; i < photoJson.results.length; i++) {
+//   console.log(photoJson.results[i]);
+// }
+
 // Photo.find({ styleId: 1 }).then((data) => {
 //   console.log(data);
 // });
@@ -85,8 +133,40 @@ let findPhoto = (id) => {
 //   .fromFile(csvFilePath6)
 //   .then((jsonObj) => {
 //     // console.log(jsonObj);
+//     let addData = (i) => {
+//       var current = Number(jsonObj[i].id);
+//       var obj = jsonObj[i];
+//       return Photo.find({ styleId: current }).then((data) => {
+//         var photodata = data;
+//         Skus.find({ styleId: current }).then((data1) => {
+//           var skusdata = data1;
+//           // console.log(photodata, skusdata, "hi");
+//           obj.photos = photodata;
+//           obj.skus = skusdata;
+//           // console.log(obj);
+//           return Style.insertMany([obj]);
+//         });
+//       });
+//     };
+//     let loadhelper = async (start) => {
+//       var promise = [];
+//       var position = start * 100;
+//       for (var j = position; j < position + 100; j++) {
+//         // console.log(addData(j))
+//         promise.push(addData(j));
+//       }
+//       await Promise.all(promise);
+//       console.log("added" + position);
+//       return;
+//     };
 
-//     });
+//     const loader = async () => {
+//       for (n = 0; n < 19580; n++) {
+//         await loadhelper(n);
+//       }
+//     };
+//     loader();
+//   });
 
 // let addData = (i) => {
 //   var current = Number(jsonObj[i].id);
@@ -106,27 +186,6 @@ let findPhoto = (id) => {
 //   promise.push(addData(j));
 // }
 // Promise.all(promise)
-
-//   let loadhelper = async (start) => {
-//     var promise = [];
-//     var position = start * 100;
-//     for (var j = position; j < position + 100; j++) {
-//       // console.log(addData(j))
-//       promise.push(addData(j));
-//     }
-//     console.log(promise, "promise");
-//     await Promise.all(promise);
-//     console.log("added" + position);
-//     return;
-//   };
-
-//   const loader = async () => {
-//     for (n = 0; n < 19580; n++) {
-//       await loadhelper(n);
-//     }
-//   };
-//   loader();
-// });
 
 // Related.find().then((data) => {
 //   console.log(data);

@@ -1,4 +1,4 @@
-process.env.NODE_ENV = 'production';
+process.env.NODE_ENV = "production";
 
 const express = require("express");
 // require("dotenv").config();
@@ -6,7 +6,8 @@ const path = require("path");
 const bodyParser = require("body-parser");
 const controller = require("./controller.js");
 const sessions = require("./sessions.js");
-var session = require('express-session');
+const db = require("./productDbs/productcsv");
+var session = require("express-session");
 
 const PORT = process.env.PORT || 3000;
 
@@ -15,12 +16,12 @@ const app = express();
 let count = 0;
 const genId = () => count++;
 
-app.use(express.static(path.join(__dirname, '../public')));
+app.use(express.static(path.join(__dirname, "../public")));
 app.use(express.json());
 app.use((req, res, next) => {
-  console.log('serving: ', req.method, req.path, req.query);
+  console.log("serving: ", req.method, req.path, req.query);
   next();
-})
+});
 //app.get('/', (req, res) => {console.log('in root url get req!!!'); res.end})
 
 app.get("/reviews/", (req, res) => {
@@ -72,30 +73,39 @@ app.post("/reviews", (req, res) => {
   controller.postForm(req, res);
 });
 
+app.get("/styles", (req, res) => {
+  controller.getStyles(req, res);
+});
 
-app.get('/styles', (req, res) => {
-
-  controller.getStyles(req, res)
-
-})
-
-app.post('/outfit/', (req, res) => {
+app.post("/outfit/", (req, res) => {
   sessions.setOutfit(req.sessionID, req.body);
-  res.status(201).send()
-})
+  res.status(201).send();
+});
 
-app.get('/outfit', (req, res) => {
+app.get("/outfit", (req, res) => {
   var outfit = sessions.getOutfit(req.sessionID);
   outfit = outfit === undefined ? [] : outfit;
   res.status(200).send(outfit);
-})
+});
 
-app.post('/interactions', controller.postInteraction)
+app.post("/interactions", controller.postInteraction);
 
-app.get('/null', (req, res) => {
+app.get("/null", (req, res) => {
   // console.log('get null req: ', req.sessionStore)
   // console.log('GET /null req: WHY IS THIS HERE?')
-  res.sendStatus(200)
-})
+  res.sendStatus(200);
+});
 
-app.listen(PORT, () => {console.log(`Server is listening at http://localhost:${PORT}`);});
+app.listen(PORT, () => {
+  console.log(`Server is listening at http://localhost:${PORT}`);
+});
+
+app.get("/helloworld", (req, res) => {
+  db.findStyle(1)
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+});
