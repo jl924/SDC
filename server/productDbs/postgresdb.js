@@ -34,6 +34,32 @@ async function loadProducts() {
     .catch((error) => console.log(error, "err"))
 }
 // ===============================================================================================================
+const relatedDb = `COPY related(id, current_product_id, related_product_id)
+  FROM '${path.join(__dirname, "./csv/related.csv")}'
+  DELIMITER ','
+  CSV HEADER
+  NULL '0'
+  WHERE current_product_id IS NOT NULL AND related_product_id IS NOT NULL;`
+
+async function loadRelated() {
+  await db.query(`DROP TABLE IF EXISTS related`)
+  await db
+    .query(
+      `CREATE TABLE IF NOT EXISTS related (
+        id INTEGER PRIMARY KEY,
+        current_product_id INTEGER NOT NULL
+          REFERENCES products(id),
+        related_product_id INTEGER NOT NULL
+          REFERENCES products(id)
+        );`
+    )
+    .then((data) => console.log("added related"))
+    .then(() => db.query(relatedDb))
+    .then((results) => console.log("related", results.rowCount))
+    .catch((error) => console.log(error, "err"))
+}
+// CREATE INDEX related_current_product_id_idx ON related (current_product_id);
+// ===============================================================================================================
 const featureDB = `COPY features(id, product_id, feature, value)
   FROM '${path.join(__dirname, "./csv/features.csv")}'
   DELIMITER ','
@@ -57,6 +83,7 @@ async function loadFeatures() {
     .catch((error) => console.log(error, "err"))
 }
 
+// CREATE INDEX features_product_id_idx ON features (product_id);
 // ===============================================================================================================
 const stylesDb = `COPY styles(id, product_id, name, sale_price, original_price, default_style)
   FROM '${path.join(__dirname, "./csv/styles.csv")}'
@@ -82,6 +109,7 @@ async function loadStyles() {
     .then((results) => console.log("styles", results.rowCount))
     .catch((error) => console.log(error, "err"))
 }
+// CREATE INDEX styles_product_id_idx ON styles (product_id);
 // ===============================================================================================================
 const skusDb = `COPY skus(id, style_id, size, quantity)
   FROM '${path.join(__dirname, "./csv/skus.csv")}'
@@ -105,6 +133,7 @@ async function loadSkus() {
     .then((results) => console.log("skus", results.rowCount))
     .catch((error) => console.log(error, "err"))
 }
+// CREATE INDEX skus_style_id_idx ON skus (style_id);
 // ===============================================================================================================
 const photoDb = `COPY photos(id, style_id, url, thumbnail_url)
   FROM '${path.join(__dirname, "./csv/photos.csv")}'
@@ -119,8 +148,8 @@ async function loadPhoto() {
           id INTEGER PRIMARY KEY,
           style_id INTEGER NOT NULL
             REFERENCES styles(id),
-          url VARCHAR (200),
-          thumbnail_url VARCHAR (200)
+          url TEXT,
+          thumbnail_url TEXT
           );`
     )
     .then((data) => console.log("added photo"))
@@ -128,221 +157,95 @@ async function loadPhoto() {
     .then((results) => console.log("photos", results.rowCount))
     .catch((error) => console.log(error, "err"))
 }
+// CREATE INDEX photos_style_id_idx ON photos (style_id);
 // ===============================================================================================================
-async function loadDb() {
-  await db.query(`DROP TABLE IF EXISTS photos`)
-  await db.query(`DROP TABLE IF EXISTS skus`)
-  await db.query(`DROP TABLE IF EXISTS styles`)
-  await db.query(`DROP TABLE IF EXISTS features`)
-  await Promise.all[loadProducts()]
-  await Promise.all[loadFeatures()]
-  await Promise.all[loadStyles()]
-  await Promise.all[loadSkus()]
-  await Promise.all[loadPhoto()]
+// async function loadDb() {
+//   await db.query(`DROP TABLE IF EXISTS related`)
+//   await db.query(`DROP TABLE IF EXISTS photos`)
+//   await db.query(`DROP TABLE IF EXISTS skus`)
+//   await db.query(`DROP TABLE IF EXISTS styles`)
+//   await db.query(`DROP TABLE IF EXISTS features`)
+//   await db.query(`DROP TABLE IF EXISTS products`)
+//   await Promise.all[loadProducts()]
+//   await Promise.all[loadRelated()]
+//   await Promise.all[loadFeatures()]
+//   await Promise.all[loadStyles()]
+//   await Promise.all[loadSkus()]
+//   await Promise.all[loadPhoto()]
+// }
+// loadDb()
+// ===============================================================================================================
+
+let findProducts = (id) => {
+  return db
+    .query(
+      `SELECT products.id, products.name , products.description, products.category, products.default_price, c.feature, c.value
+  FROM products products
+  JOIN features c
+  ON products.id = c.product_id
+  WHERE products.id = ${id}
+  AND products.id = ${id};`
+    )
+    .then((data) => {
+      var curr = data.rows[0]
+      var obj = {}
+      obj.id = curr.id
+      obj.name = curr.name
+      obj.description = curr.description
+      obj.category = curr.category
+      obj.default_price = curr.default_price
+      obj.features = []
+      for (var i = 0; i < data.rows.length; i++) {
+        var Objpush = {}
+        var current = data.rows[i]
+        Objpush.feature = current.feature
+        Objpush.value = current.value
+        obj.features.push(Objpush)
+      }
+      return obj
+    })
 }
-loadDb()
-// async function buildTables() {
-//   db.query("DROP TABLE IF EXISTS ;")
-//     .then(() => {
-//       db.query(`
-//       CREATE TABLE IF NOT EXISTS products (
-//         id INTEGER PRIMARY KEY,
-//         name VARCHAR (30) NOT NULL,
-//         slogan VARCHAR (256) NOT NULL,
-//         description VARCHAR (512) NOT NULL,
-//         category VARCHAR (20) NOT NULL,
-//         default_price VARCHAR (10) NOT NULL
-//       )`)
-//     })
-//     .then(() =>
-//       db.query(`
-//       COPY products(id, name, slogan, description, category, default_price)
-//         FROM './csv/product.csv'
-//         DELIMITER ','
-//         CSV HEADER
-//     `)
-//     )
-//     .then(() =>
-//       db.query(`
-//       CREATE TABLE IF NOT EXISTS features (
-//         id INTEGER PRIMARY KEY,
-//         product_id INTEGER
-//           REFERENCES products(id),
-//         feature VARCHAR (24) NOT NULL,
-//         value VARCHAR (30)
-//     )`)
-//     )
-//     .then(() =>
-//       db.query(`
-//       COPY features(id, product_id, feature, value)
-//       FROM './csv/features.csv'
-//         DELIMITER ','
-//         CSV HEADER
-//     `)
-//     )
-//     .then(() =>
-//       db.query(`
-//       CREATE TABLE IF NOT EXISTS styles (
-//         style_id INTEGER PRIMARY KEY,
-//         product_id INTEGER
-//           REFERENCES products(id),
-//         name VARCHAR (30),
-//         sale_price VARCHAR (10),
-//         original_price VARCHAR (10),
-//         default_style BOOLEAN
-//     )`)
-//     )
-//     .then(() =>
-//       db.query(`
-//       COPY styles(id, product_id, name, sale_price, original_price, default_style)
-//       FROM './csv/styles.csv'
-//         DELIMITER ','
-//         CSV HEADER
-//     `)
-//     )
-//     .then(() =>
-//       db.query(`
-//       CREATE TABLE IF NOT EXISTS photos (
-//         id INTEGER PRIMARY KEY,
-//         style_id INTEGER NOT NULL
-//           REFERENCES styles(id),
-//         url VARCHAR (155),
-//         thumbnail_url VARCHAR (155)
-//     )`)
-//     )
-//     .then(() =>
-//       db.query(`
-//       COPY photos(id, style_id, url, thumbnail_url)
-//       FROM './csv/photos.csv'
-//         DELIMITER ','
-//         CSV HEADER
-//     `)
-//     )
-//     .then(() => {
-//       db.query(`
-//       CREATE TABLE IF NOT EXISTS skus (
-//         id INTEGER PRIMARY KEY,
-//         style_id INTEGER NOT NULL
-//           REFERENCES styles(id),
-//         size VARCHAR (10),
-//         quantity INTEGER
-//     )`)
-//     })
-//     .then(() =>
-//       db.query(`
-//       COPY skus(id, style_id, size, quantity)
-//       FROM './csv/skus.csv'
-//         DELIMITER ','
-//         CSV HEADER
-//     `)
-//     )
-//     .then(() =>
-//       db.query(`
-//       CREATE TABLE IF NOT EXISTS related (
-//         id INTEGER PRIMARY KEY,
-//         current_product_id INTEGER NOT NULL
-//           REFERENCES products(id),
-//         related_product_id INTEGER NOT NULL
-//           REFERENCES products(id)
-//     )`)
-//     )
-//     .then(() =>
-//       db.query(`
-//       COPY related(id, current_product_id, related_product_id)
-//       FROM './csv/features.csv'
-//         DELIMITER ','
-//         CSV HEADER
-//         NULL '0'
-//         WHERE current_product_id IS NOT NULL AND related_product_id IS NOT NULL
-//     `)
-//     )
-//     .then(() =>
-//       db.query(`
-//       CREATE TABLE IF NOT EXISTS categories (
-//         id SERIAL PRIMARY KEY,
-//         category VARCHAR (20) NOT NULL
-//       )
-//     `)
-//     )
-//     .then(() =>
-//       db.query(`
-//       INSERT INTO categories(category)
-//       (
-//         SELECT DISTINCT category
-//         FROM products
-//       )
-//     `)
-//     )
-//     .then(() =>
-//       db.query(`
-//       ALTER TABLE products
-//       ADD COLUMN category_id INTEGER
-//       REFERENCES categories(id)
-//     `)
-//     )
-//     .then(() =>
-//       db.query(`
-//         UPDATE products
-//         SET category_id = categories.id
-//         FROM categories
-//         WHERE products.category = categories.category
-//     `)
-//     )
-//     .then(() =>
-//       db.query(`
-//         ALTER TABLE products
-//         DROP COLUMN category
-//     `)
-//     )
-//     .catch((err) => console.log("err: ", err))
-// }
 
-// async function makeIndexes() {
-//   db.query(
-//     `
-//     CREATE INDEX idx_feats_product_id
-//     ON features(product_id)
-//   `
-//   ).catch((err) =>
-//     console.log("ERROR: ", err, "\ncouldn't make index on features")
-//   )
-//   db.query(
-//     `
-//     CREATE INDEX idx_styles_product_id
-//     ON styles(product_id)
-//   `
-//   ).catch((err) =>
-//     console.log("ERROR: ", err, "\ncouldn't make index on styles")
-//   )
-//   db.query(
-//     `
-//     CREATE INDEX idx_curr_product_id
-//     ON related(current_product_id)
-//   `
-//   ).catch((err) =>
-//     console.log("ERROR: ", err, "\ncouldn't make index on related products")
-//   )
-//   db.query(
-//     `
-//     CREATE INDEX idx_photos_style_id
-//     ON photos(style_id)
-//   `
-//   ).catch((err) =>
-//     console.log("ERROR: ", err, "\ncouldn't make index on photos")
-//   )
-//   db.query(
-//     `
-//     CREATE INDEX idx_skus_style_id
-//     ON skus(style_id)
-//   `
-//   ).catch((err) => console.log("ERROR: ", err, "\ncouldn't make index on skus"))
-// }
+module.exports.findProducts = findProducts
 
-// async function generateProductsAndMakeIndexes() {
-//   await buildTables()
-//   await makeIndexes()
-// }
+// ===============================================================================================================
 
-// db.connect().then(() => {
-//   generateProductsAndMakeIndexes()
-// })
+let findRelated = (id) => {
+  return db
+    .query(
+      `SELECT * FROM related WHERE current_product_id = ${id} AND current_product_id = ${id};`
+    )
+    .then((data) => {
+      var array = []
+      for (var i = 0; i < data.rows.length; i++) {
+        var curr = data.rows[i]
+        array.push(curr.related_product_id)
+      }
+      return array
+    })
+}
+module.exports.findRelated = findRelated
+
+// ===============================================================================================================
+
+let findStyles = (id) => {
+  return db
+    .query(
+      `SELECT s.id AS style_id, s.name, s.original_price, NULLIF(s.sale_price, 'null') AS sale_price, s.default_style AS "default?", json_agg(json_build_object('thumbnail_url', p.thumbnail_url, 'url', p.url)) AS photos, json_object_agg(sk.id, json_build_object('quantity', sk.quantity, 'size', sk.size)) AS skus
+    FROM styles s
+    INNER JOIN photos p ON s.id = p.style_id
+    INNER JOIN skus sk ON s.id = sk.style_id
+    WHERE s.product_id = ${id} GROUP BY s.id, s.name, s.original_price, s.sale_price, s.default_style
+    AND s.product_id = ${id}`
+    )
+    .then((data) => {
+      data.rows.photos
+      var obj = {}
+      obj.product_id = id
+      obj.results = data.rows
+      return obj
+    })
+}
+module.exports.findStyles = findStyles
+
+// ===============================================================================================================

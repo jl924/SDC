@@ -1,0 +1,14 @@
+config:
+  target: "http://localhost:3000"
+  phases:
+    - duration: 30
+      arrivalRate: 50
+  defaults:
+    timeout: 5000
+    headers:
+      content-type: "application/json"
+scenarios:
+  - name: "Get reviews"
+    flow:
+      - get:
+          url: "/helloworld2"

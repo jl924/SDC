@@ -1,13 +1,13 @@
-const csv = require("csvtojson");
-const mongoose = require("mongoose");
-const fs = require("fs");
+const csv = require("csvtojson")
+const mongoose = require("mongoose")
+const fs = require("fs")
 
 mongoose.connect("mongodb://localhost:27017/sdc", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-});
+})
 
-const db = mongoose.connection;
+const db = mongoose.connection
 // db.on("error", console.error.bind(console, "connection error:"));
 // db.once("open", function () {
 //   // we're connected!
@@ -26,16 +26,16 @@ const productSchema = new mongoose.Schema({
       value: String,
     },
   ],
-});
+})
 
-const Products = mongoose.model("products", productSchema);
+const Products = mongoose.model("products", productSchema)
 
 const relatedSchema = new mongoose.Schema({
   id: Number,
   related: Array,
-});
+})
 
-const Related = mongoose.model("related", relatedSchema);
+const Related = mongoose.model("related", relatedSchema)
 
 const styleSchema = mongoose.Schema(
   {
@@ -52,34 +52,35 @@ const styleSchema = mongoose.Schema(
     ],
   },
   { minimize: false }
-);
+)
 
-const Style = mongoose.model("Style", styleSchema);
+const Style = mongoose.model("Style", styleSchema)
 
 const photoSchema = mongoose.Schema({
   id: Number,
   styleId: Number,
   url: String,
   thumbnail_url: String,
-});
+})
 
-const Photo = mongoose.model("photo", photoSchema);
+const Photo = mongoose.model("photo", photoSchema)
 
 const skusSchema = mongoose.Schema({
   skus: {},
-});
+})
 
-const Skus = mongoose.model("skus", skusSchema);
+const Skus = mongoose.model("skus", skusSchema)
 
 // Photo.find({ styleId: 10000 }).then((data) => {
 //   console.log(data);
 // });
 
-// let findPhoto = (id) => {
-//   return Photo.find({ styleId: id }).then((data) => {
-//     return data;
-//   });
-// };
+let findPhoto = (num) => {
+  return Related.find({ id: num }).then((data) => {
+    return data
+  })
+}
+module.exports.findPhoto = findPhoto
 
 // let findStyle = (num, callback) => {
 //   Style.find({ productId: num }).then((data) => {
@@ -101,7 +102,6 @@ const Skus = mongoose.model("skus", skusSchema);
 // const fileJson = require("./csv/file.json");
 // console.log(fileJson.results[0]);
 // module.exports.findSkus = findSkus;
-// module.exports.findStyle = findStyle;
 // module.exports.findPhoto = findPhoto;
 // const csvFilePath4 = `${__dirname}/csv/skus.csv`;
 // const csvFilePath5 = `${__dirname}/csv/photos.csv`;
