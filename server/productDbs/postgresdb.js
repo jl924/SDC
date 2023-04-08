@@ -227,7 +227,49 @@ let findRelated = (id) => {
 module.exports.findRelated = findRelated
 
 // ===============================================================================================================
-
+var dummy = [
+  {
+    style_id: 4,
+    name: "No styles",
+    original_price: "140",
+    sale_price: null,
+    "default?": false,
+    photos: [
+      {
+        thumbnail_url:
+          "https://t3.ftcdn.net/jpg/03/34/83/22/360_F_334832255_IMxvzYRygjd20VlSaIAFZrQWjozQH6BQ.jpg",
+        url: "https://t3.ftcdn.net/jpg/03/34/83/22/360_F_334832255_IMxvzYRygjd20VlSaIAFZrQWjozQH6BQ.jpg",
+      },
+    ],
+    skus: {
+      19: {
+        quantity: 8,
+        size: "XS",
+      },
+      20: {
+        quantity: 16,
+        size: "S",
+      },
+      21: {
+        quantity: 17,
+        size: "M",
+      },
+      22: {
+        quantity: 10,
+        size: "L",
+      },
+      23: {
+        quantity: 15,
+        size: "XL",
+      },
+      24: {
+        quantity: 6,
+        size: "XXL",
+      },
+    },
+  },
+]
+// ===============================================================================================================
 let findStyles = (id) => {
   return db
     .query(
@@ -239,10 +281,24 @@ let findStyles = (id) => {
     AND s.product_id = ${id}`
     )
     .then((data) => {
-      data.rows.photos
+      for (var i = 0; i < data.rows.length; i++) {
+        if (data.rows[i].sale_price === null) {
+          data.rows[i].sale_price === "0"
+        }
+        for (var j = 0; j < data.rows[i].photos.length; j++) {
+          var curr = data.rows[i].photos[j]
+          var next = data.rows[i].photos[j + 1] || "hello"
+          if (curr.thumbnail_url === next.thumbnail_url) {
+            data.rows[i].photos.splice(j, 1)
+            j--
+          } else {
+            continue
+          }
+        }
+      }
       var obj = {}
       obj.product_id = id
-      obj.results = data.rows
+      obj.results = data.rows.length > 1 ? data.rows : dummy
       return obj
     })
 }

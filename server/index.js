@@ -19,10 +19,10 @@ const genId = () => count++
 
 app.use(express.static(path.join(__dirname, "../public")))
 app.use(express.json())
-app.use((req, res, next) => {
-  console.log("serving: ", req.method, req.path, req.query)
-  next()
-})
+// app.use((req, res, next) => {
+//   console.log("serving: ", req.method, req.path, req.query)
+//   next()
+// })
 //app.get('/', (req, res) => {console.log('in root url get req!!!'); res.end})
 
 app.get("/reviews/", (req, res) => {
@@ -65,7 +65,7 @@ app.post("/qa/questions", (req, res) => {
 app.get(
   ["/products", "/products/:id", "/products/:id/:related"],
   (req, res) => {
-    //console.log('get products params: ', req.params);
+    // console.log(req)
     controller.getProducts(req, res)
   }
 )
@@ -112,7 +112,7 @@ app.get("/helloworld", (req, res) => {
 })
 
 app.get("/helloworld2", (req, res) => {
-  pg.findProducts(1)
+  pg.findProducts(9)
     .then((data) => {
       res.send(data)
     })
