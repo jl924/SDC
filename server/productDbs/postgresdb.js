@@ -1,12 +1,13 @@
 const { Client } = require("pg")
 const path = require("path")
+const config = require("./csv/credential")
 
 const db = new Client({
-  host: "localhost",
+  host: config.host,
   port: 5432,
   database: "sdc",
   user: "jaelee",
-  password: "1234",
+  password: config.password,
 })
 
 db.connect()
@@ -160,28 +161,28 @@ async function loadPhoto() {
 // CREATE INDEX photos_style_id_idx ON photos (style_id);
 // ===============================================================================================================
 async function loadDb() {
-  await db.query(`DROP TABLE IF EXISTS related`)
-  await db.query(`DROP TABLE IF EXISTS photos`)
-  await db.query(`DROP TABLE IF EXISTS skus`)
-  await db.query(`DROP TABLE IF EXISTS styles`)
-  await db.query(`DROP TABLE IF EXISTS features`)
-  await db.query(`DROP TABLE IF EXISTS products`)
-  await Promise.all[loadProducts()]
-  await Promise.all[loadRelated()]
-  await Promise.all[loadFeatures()]
-  await Promise.all[loadStyles()]
-  await Promise.all[loadSkus()]
-  await Promise.all[loadPhoto()]
-  await db.query(
-    `CREATE INDEX features_product_id_idx ON features (product_id);`
-  )
-  await db.query(`CREATE INDEX styles_product_id_idx ON styles (product_id);`)
-  await db.query(`CREATE INDEX skus_style_id_idx ON skus (style_id);`)
-  await db.query(`CREATE INDEX photos_style_id_idx ON photos (style_id);`)
-  await db.query(
-    `CREATE INDEX related_current_product_id_idx ON related (current_product_id);`
-  )
-  await db.query(`CREATE INDEX products_id_idx ON products (id);`)
+  // await db.query(`DROP TABLE IF EXISTS related`)
+  // await db.query(`DROP TABLE IF EXISTS photos`)
+  // await db.query(`DROP TABLE IF EXISTS skus`)
+  // await db.query(`DROP TABLE IF EXISTS styles`)
+  // await db.query(`DROP TABLE IF EXISTS features`)
+  // await db.query(`DROP TABLE IF EXISTS products`)
+  // await Promise.all[loadProducts()]
+  // await Promise.all[loadRelated()]
+  // await Promise.all[loadFeatures()]
+  // await Promise.all[loadStyles()]
+  // await Promise.all[loadSkus()]
+  // await Promise.all[loadPhoto()]
+  // await db.query(
+  //   `CREATE INDEX features_product_id_idx ON features (product_id);`
+  // )
+  // await db.query(`CREATE INDEX styles_product_id_idx ON styles (product_id);`)
+  // await db.query(`CREATE INDEX skus_style_id_idx ON skus (style_id);`)
+  // await db.query(`CREATE INDEX photos_style_id_idx ON photos (style_id);`)
+  // await db.query(
+  //   `CREATE INDEX related_current_product_id_idx ON related (current_product_id);`
+  // )
+  // await db.query(`CREATE INDEX products_id_idx ON products (id);`)
 }
 loadDb()
 // ===============================================================================================================
