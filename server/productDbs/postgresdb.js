@@ -3,11 +3,11 @@ const path = require("path")
 const config = require("./csv/credential")
 
 const db = new Client({
-  host: config.host,
+  host: "localhost",
   port: 5432,
   database: "sdc",
   user: "jaelee",
-  password: config.password,
+  password: "1234",
 })
 
 db.connect()
