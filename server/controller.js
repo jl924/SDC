@@ -1,5 +1,6 @@
 const API = require("./API.js")
 const pg = require("./productDbs/postgresdb")
+const pg2 = require("./productDbs/postgres2")
 const getReviews = (req, res) => {
   //console.log('in getReviews')
   const params = req.query
@@ -214,3 +215,5 @@ module.exports = {
   getStyles,
   postInteraction,
 }
+
+console.log('hello')

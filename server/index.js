@@ -8,6 +8,7 @@ const controller = require("./controller.js")
 const sessions = require("./sessions.js")
 const db = require("./productDbs/productcsv")
 const pg = require("./productDbs/postgresdb")
+const pg2 = require("./productDbs/postgres2")
 var session = require("express-session")
 
 const PORT = process.env.PORT || 3000
@@ -102,26 +103,52 @@ app.listen(PORT, () => {
 })
 
 app.get("/helloworld", (req, res) => {
-  pg.findRelated(1)
-    .then((data) => {
-      res.send(data)
-    })
-    .catch((err) => {
-      console.log(err)
-    })
+  var num = Math.round(Math.random())
+  if (num === 1) {
+    pg.findRelated(1)
+      .then((data) => {
+        res.send(data)
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+  } else {
+    pg2
+      .findRelated(1)
+      .then((data) => {
+        res.send(data)
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+  }
 })
 
 app.get("/helloworld2", (req, res) => {
-  pg.findProducts(9)
+  // var num = Math.round(Math.random())
+  // if (num === 1) {
+  pg2
+    .findProducts(9)
     .then((data) => {
       res.send(data)
     })
     .catch((err) => {
       console.log(err)
     })
+  // } else {
+  //   pg2
+  //     .findProducts(9)
+  //     .then((data) => {
+  //       res.send(data)
+  //     })
+  //     .catch((err) => {
+  //       console.log(err)
+  //     })
+  // }
 })
 
 app.get("/helloworld3", (req, res) => {
+  // if (num === 1) {
   pg.findStyles(1)
     .then((data) => {
       res.send(data)
@@ -129,4 +156,14 @@ app.get("/helloworld3", (req, res) => {
     .catch((err) => {
       console.log(err)
     })
+  // } else {
+  //   pg2
+  //     .findStyles(1)
+  //     .then((data) => {
+  //       res.send(data)
+  //     })
+  //     .catch((err) => {
+  //       console.log(err)
+  //     })
+  // }
 })
